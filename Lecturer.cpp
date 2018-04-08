@@ -1,18 +1,17 @@
-#include "Student.h"
+#include "Lecturer.h"
 
-void DesignStudent(string username, string password)
+void DesignLecturer(string username, string password)
 {
 	system("cls");
-	cout << "+++++++++++++++ STUDENT +++++++++++++++" << endl;
+	cout << "+++++++++++++ LECTURER +++++++++++++" << endl;
 	cout << "1.View info of your account" << endl;
 	cout << "2.Change password" << endl;
 	cout << "3.Log out" << endl;
-	cout << "4.Check in" << endl;
-	cout << "5. View check in result" << endl;
-	cout << "6.View score of a course" << endl;
-	cout << "7.View schedule" << endl;
+	cout << "4.Import screboard of a course" << endl;
+	cout << "5.Edit a student score" << endl;
+	cout << "6.View a scoreboard" << endl;
 	int option;
-	cout << "PLEASE INPUT YOUR OPTION:"; cin >> option;
+	cout << "PLEASE INPUT YOUR OPTION "; cin >> option;
 	switch (option) {
 	case 1: {
 		break;
@@ -32,10 +31,8 @@ void DesignStudent(string username, string password)
 	case 6: {
 		break;
 	}
-	case 7: {
-		break;
-	}
 	default:
 		cout << "wrong input" << endl;
 	}
+	system("pause");
 }

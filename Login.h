@@ -7,12 +7,25 @@
 #include <algorithm>
 #include <string>
 #include <string.h>
+using namespace std;
 
-struct user
+struct userlogin
 {
-    char username[50];
-    char password[50];
+	string user;
+	string pass;
+	string type;
+	string fullname;
+	string email;
+	string mobiphone;
+	string Class;
 };
 
-void ViewLogin();
+struct nodeuser
+{
+	userlogin data;
+	nodeuser *next;
+};
+
+bool cmp(string a, string b);
+int ViewLogin(string username, string password);
 #endif // _LOGIN_H_

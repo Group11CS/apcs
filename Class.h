@@ -1,5 +1,6 @@
-#ifndef _STUDENT_H_
-#define _STUDENT_H_
+#pragma once
+#ifndef _CLASS_H_
+#define _CLASS_H_
 #include <iostream>
 #include <fstream>
 #include <stack>
@@ -9,6 +10,9 @@
 #include <string.h>
 using namespace std;
 
-void DesignStudent(string username, string password);
-#endif // _ACADEMICSTAFF_H_
-
+struct listclass
+{
+	string data;
+	listclass* next;
+};
+#endif // !_CLASS_H_
