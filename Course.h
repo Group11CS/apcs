@@ -11,7 +11,7 @@
 using namespace std;
 enum dayofweek
 {
-	Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+	Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
 };
 struct dateofyear
 {
@@ -36,6 +36,7 @@ struct course
 	timeofday TimeStart;
 	timeofday TimeEnd;
 	dayofweek day;
+	int period;
 };
 struct nodecourse
 {
@@ -45,4 +46,5 @@ struct nodecourse
 dateofyear StrToDate(string s);
 timeofday StrToTime(string s);
 dayofweek StrToDay(string s);
+int StrToPeriod(string a, string b);
 #endif // !_COURSE_H_

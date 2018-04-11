@@ -50,6 +50,12 @@ dayofweek StrToDay(string s)
 	if (s == "Wednesday") return Wednesday;
 	if (s == "Thursday") return Thursday;
 	if (s == "Friday") return Friday;
-	if (s == "Saturday") return Saturday;
-	return Sunday;
+	return Saturday;
+}
+int StrToPeriod(string a, string b)
+{
+	if (a == "7:30" && b == "9:10") return 0;
+	if (a == "9:30" && b == "11:10") return 1;
+	if (a == "13:30" && b == "15:10") return 2;
+	return 3;
 }
