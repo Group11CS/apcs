@@ -16,7 +16,7 @@ struct userlogin
 	string type;
 	string fullname;
 	string email;
-	string mobiphone;
+	string phone;
 	string Class;
 };
 
@@ -27,5 +27,7 @@ struct nodeuser
 };
 
 bool cmp(string a, string b);
-int ViewLogin(string username, string password);
+int ViewLogin(string &username, string &password);
+void GetInfo(string username, string password);
+void ShowInfo(nodeuser *cur);
 #endif // _LOGIN_H_

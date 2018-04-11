@@ -619,6 +619,7 @@ void RemoveCourse(nodecourse *&phead, string Class)
 	}
 	ExportCourse(phead, Class);
 }
+
 void ViewListofCourse(nodecourse *phead)
 {
 	nodecourse *cur = phead;
@@ -724,6 +725,10 @@ void DesignAcademicStaff(string username, string password)
 	cin >> option;
 	switch (option) {
 	case 1: {
+		system("cls");
+		GetInfo(username, password);
+		cin.ignore(1000, '\n');
+		DesignAcademicStaff(username, password);
 		break;
 	}
 	case 2: {
