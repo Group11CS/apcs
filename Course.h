@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <string>
 #include <string.h>
+#include <sstream>
 using namespace std;
 enum dayofweek
 {
@@ -24,10 +25,15 @@ struct timeofday
 	string hour;
 	string minute;
 };
+struct CourseYear
+{
+	string yearStart;
+	string yearEnd;
+};
 struct course
 {
 	string CourseCode;
-	string Year;
+	CourseYear Year;
 	int semester;
 	string CourseName;
 	string Lecturer;
@@ -46,5 +52,7 @@ struct nodecourse
 dateofyear StrToDate(string s);
 timeofday StrToTime(string s);
 dayofweek StrToDay(string s);
+CourseYear StrToYear(string s);
 int StrToPeriod(string a, string b);
+string IntToStr(int s);
 #endif // !_COURSE_H_

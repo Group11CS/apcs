@@ -3,6 +3,41 @@
 #include "Class.h"
 #include "Login.h"
 #include "Schedule.h"
+#include "Lecturer.h"
+
+void ReleaseStudent(nodestudent *&phead)
+{
+	nodestudent *cur = phead;
+	while (cur)
+	{
+		nodestudent *tmp = cur;
+		cur = cur->next;
+		delete tmp;
+	}
+}
+
+void ReleaseCourse(nodecourse *&phead)
+{
+	nodecourse *cur = phead;
+	while (cur)
+	{
+		nodecourse *tmp = cur;
+		cur = cur->next;
+		delete tmp;
+	}
+}
+
+void ReleaseClass(listclass *&phead)
+{
+	listclass *cur = phead;
+	while (cur)
+	{
+		listclass *tmp = cur;
+		cur = cur->next;
+		delete tmp;
+	}
+}
+
 void Importstudentlist(int n) 
 {
 	string Class, s;
@@ -36,6 +71,7 @@ void Importstudentlist(int n)
 	{
 		AddEmptyClass(pclass);
 		cout << "Complete!" << endl;
+		ReleaseClass(pclass);
 		system("pause");
 		return;
 	}
@@ -88,6 +124,8 @@ void Importstudentlist(int n)
 			else if (n == 6) EditStudent(head, Class);
 			else if (n == 7) RemoveStudent(head, Class);
 			else if (n == 11) ViewListofStudent(head, Class);
+			ReleaseClass(pclass);
+			ReleaseStudent(head);
 			break;
 		}
 		else cur = cur->next;
@@ -446,8 +484,6 @@ void ImportCourse(int n)
 		{
 			cout << "Valid Class!" << endl;
 			fin.open(Class + "_course.csv");
-			string a;
-			//getline(fin, a, '\n');
 			if (!fin.is_open()) return;
 			while (fin.good())
 			{
@@ -457,7 +493,7 @@ void ImportCourse(int n)
 					getline(fin, s, ',');
 					pcourse->data.CourseCode = s;
 					getline(fin, s, ',');
-					pcourse->data.Year = s;
+					pcourse->data.Year = StrToYear(s);
 					getline(fin, s, ',');
 					pcourse->data.semester = s[0] - '0';
 					getline(fin, s, ',');
@@ -487,7 +523,7 @@ void ImportCourse(int n)
 					getline(fin, s, ',');
 					tmp->data.CourseCode = s;
 					getline(fin, s, ',');
-					tmp->data.Year = s;
+					tmp->data.Year = StrToYear(s);
 					getline(fin, s, ',');
 					tmp->data.semester = s[0] - '0';
 					getline(fin, s, ',');
@@ -517,6 +553,8 @@ void ImportCourse(int n)
 			else if (n == 16) ViewListofCourse(pcourse);
 			cout << "Completed!" << endl;
 			MakeSchedule(pcourse, Class);
+			ReleaseClass(pclass);
+			ReleaseCourse(pcourse);
 			system("pause");
 			return;
 		}
@@ -532,14 +570,14 @@ void AddNewCourse(nodecourse *&phead, string Class)
 	string s;
 	nodecourse *cur = phead;
 	while (cur->next) cur = cur->next;
-	cur->next = phead;
+	cur->next = new nodecourse;
 	cur = cur->next;
 	cout << "Input Course's Code: ";
 	getline(cin, s, '\n');
 	cur->data.CourseCode = s;
 	cout << "Input Course's Year(yyyy-yyyy): ";
 	getline(cin, s, '\n');
-	cur->data.Year = s;
+	cur->data.Year = StrToYear(s);
 	cout << "Input Course's semester: ";
 	getline(cin, s, '\n');
 	cur->data.semester = s[0] - '0';
@@ -569,26 +607,6 @@ void AddNewCourse(nodecourse *&phead, string Class)
 	cur->data.day = StrToDay(s);
 	cur->next = NULL;
 	ExportCourse(phead, Class);
-	/*ofstream fout;
-	fout.open(Class + "_course.csv", ios::app);
-	fout << endl;
-	fout << cur->data.CourseCode << ",";
-	fout << cur->data.Year << ",";
-	fout << cur->data.semester << ",";
-	fout << cur->data.CourseName << ",";
-	fout << cur->data.Lecturer << ",";
-	fout << cur->data.DateStart.day << "/" << cur->data.DateStart.month << "/" << cur->data.DateStart.year << ",";
-	fout << cur->data.DateEnd.day << "/" << cur->data.DateEnd.month << "/" << cur->data.DateEnd.year << ",";
-	fout << cur->data.TimeStart.hour << ":" << cur->data.TimeStart.minute << ",";
-	fout << cur->data.TimeEnd.hour << ":" << cur->data.TimeEnd.minute << ",";
-	if (cur->data.day == Monday) fout << "Monday";
-	else if (cur->data.day == Tuesday) fout << "Tuesday";
-	else if (cur->data.day == Wednesday) fout << "Wednesday";
-	else if (cur->data.day == Thursday) fout << "Thursday";
-	else if (cur->data.day == Friday) fout << "Friday";
-	else if (cur->data.day == Saturday) fout << "Saturday";
-	else fout << "Sunday";
-	fout.close();*/
 	return;
 }
 
@@ -638,7 +656,7 @@ void ExportCourse(nodecourse *cur, string Class)
 	while (cur->next!=NULL)
 	{
 		fout << cur->data.CourseCode << ",";
-		fout << cur->data.Year << ",";
+		fout << cur->data.Year.yearStart << "-" << cur->data.Year.yearEnd << ",";
 		fout << cur->data.semester << ",";
 		fout << cur->data.CourseName << ",";
 		fout << cur->data.Lecturer << ",";
@@ -657,7 +675,7 @@ void ExportCourse(nodecourse *cur, string Class)
 		fout << endl;
 	}
 	fout << cur->data.CourseCode << ",";
-	fout << cur->data.Year << ",";
+	fout << cur->data.Year.yearStart << "-" << cur->data.Year.yearEnd << ",";
 	fout << cur->data.semester << ",";
 	fout << cur->data.CourseName << ",";
 	fout << cur->data.Lecturer << ",";
@@ -675,7 +693,6 @@ void ExportCourse(nodecourse *cur, string Class)
 	cur = cur->next;
 	fout.close();
 }
-
 
 void DesignAcademicStaff(string username, string password)
 {
@@ -718,7 +735,7 @@ void DesignAcademicStaff(string username, string password)
 	cout << endl;
 	cout << ">> ============== SCOREBOARD ================ <<" << endl;
 	cout << "24.Search and view a scoreboard of a course" << endl;
-	cout << "25.Export score board to a csv file" << endl;
+	cout << "25.Export scoreboard to a csv file" << endl;
 	cout << endl;
 	cout << "PLEASE CHOOSE YOUR OPTION: ";
 	int option;
@@ -791,19 +808,19 @@ void DesignAcademicStaff(string username, string password)
 	case 12: {
 		system("cls");
 		ImportCourse(12);
-		DesignAcademicStaff(username,password);
+		DesignAcademicStaff(username, password);
 		break;
 	}
 	case 13: {
 		system("cls");
 		ImportCourse(13);
-		DesignAcademicStaff(username,password);
+		DesignAcademicStaff(username, password);
 		break;
 	}
 	case 14: {
 		system("cls");
 		ImportCourse(14);
-		DesignAcademicStaff(username,password);
+		DesignAcademicStaff(username, password);
 		break;
 	}
 	case 15: {
@@ -843,6 +860,9 @@ void DesignAcademicStaff(string username, string password)
 		break;
 	}
 	case 21: {
+		system("cls");
+		ImportSchedule(21);
+		DesignAcademicStaff(username, password);
 		break;
 	}
 	case 22: {
@@ -852,6 +872,12 @@ void DesignAcademicStaff(string username, string password)
 		break;
 	}
 	case 24: {
+		system("cls");
+		ImportScoreboard(24);
+		DesignAcademicStaff(username, password);
+		break;
+	}
+	case 25: {
 		break;
 	}
 	default:

@@ -5,28 +5,34 @@
 
 void MakeSchedule(nodecourse *phead, string Class)
 {
-	schedule a;
+	schedule a[3];
 	nodecourse *cur = phead;
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 6; j++) a.c[i][j] = "x";
+	for(int k = 0; k < 3; k++)
+		for (int i = 0; i < 4; i++)
+			for (int j = 0; j < 6; j++) a[k].c[i][j] = "x";
 	while (cur)
 	{
 		string s = cur->data.CourseCode;
-		a.c[cur->data.period][cur->data.day] = s;
+		a[cur->data.semester-1].c[cur->data.period][cur->data.day] = s;
 		cur = cur->next;
 	}
-	ofstream fout;
-	fout.open(Class + "_schedule.csv");
-	for (int i = 0; i < 4; i++)
+	for (int k = 0; k < 3; k++)
 	{
-		for (int j = 0; j < 6; j++)
+		stringstream ss;
+		ss << (k + 1);
+		ofstream fout;
+		fout.open(Class + "_2017-2018_" + ss.str() + + "_schedule.csv");
+		for (int i = 0; i < 4; i++)
 		{
-			if(j == 5) fout << a.c[i][j];
-			else fout << a.c[i][j] << ",";
+			for (int j = 0; j < 6; j++)
+			{
+				if (j == 5) fout << a[k].c[i][j];
+				else fout << a[k].c[i][j] << ",";
+			}
+			if (i != 3) fout << endl;
 		}
-		if (i != 3) fout << endl;
+		fout.close();
 	}
-	fout.close();
 	return;
 }
 
@@ -60,6 +66,7 @@ void ImportSchedule(int n)
 		}
 	}
 	fin.close();
+	int semester;
 	cout << "Input the Class: ";
 	cin.ignore(1000, '\n');
 	getline(cin, Class, '\n');
@@ -70,7 +77,12 @@ void ImportSchedule(int n)
 		if (cur->data == Class)
 		{
 			cout << "Valid Class!" << endl;
-			fin.open(Class + "_course.csv");
+			cout << "Import Semester: ";
+			cin >> semester;
+			cin.ignore(1000, '\n');
+			stringstream ss;
+			ss << semester;
+			fin.open(Class + "_2017-2018_" + ss.str() + "_schedule.csv");
 			for (int i = 0; i < 4; i++)
 			{
 				for (int j = 0; j < 6; j++)
@@ -80,79 +92,20 @@ void ImportSchedule(int n)
 				}
 			}
 			fin.close();
-			if (n == 21) ViewSchedule(sche);
-			fin.open(Class + "_course.csv");
-			string a;
-			//getline(fin, a, '\n');
-			if (!fin.is_open()) return;
-			while (fin.good())
+			if (n == 21)
 			{
-				if (!pcourse)
-				{
-					pcourse = new nodecourse;
-					getline(fin, s, ',');
-					pcourse->data.CourseCode = s;
-					getline(fin, s, ',');
-					pcourse->data.Year = s;
-					getline(fin, s, ',');
-					pcourse->data.semester = s[0] - '0';
-					getline(fin, s, ',');
-					pcourse->data.CourseName = s;
-					getline(fin, s, ',');
-					pcourse->data.Lecturer = s;
-					getline(fin, s, ',');
-					pcourse->data.DateStart = StrToDate(s);
-					getline(fin, s, ',');
-					pcourse->data.DateEnd = StrToDate(s);
-					getline(fin, s, ',');
-					string a = s;
-					pcourse->data.TimeStart = StrToTime(s);
-					getline(fin, s, ',');
-					string b = s;
-					pcourse->data.TimeEnd = StrToTime(s);
-					pcourse->data.period = StrToPeriod(a, b);
-					getline(fin, s, '\n');
-					pcourse->data.day = StrToDay(s);
-					pcourse->next = NULL;
-					tmp = pcourse;
-				}
-				else
-				{
-					tmp->next = new nodecourse;
-					tmp = tmp->next;
-					getline(fin, s, ',');
-					tmp->data.CourseCode = s;
-					getline(fin, s, ',');
-					tmp->data.Year = s;
-					getline(fin, s, ',');
-					tmp->data.semester = s[0] - '0';
-					getline(fin, s, ',');
-					tmp->data.CourseName = s;
-					getline(fin, s, ',');
-					tmp->data.Lecturer = s;
-					getline(fin, s, ',');
-					tmp->data.DateStart = StrToDate(s);
-					getline(fin, s, ',');
-					tmp->data.DateEnd = StrToDate(s);
-					getline(fin, s, ',');
-					string a = s;
-					tmp->data.TimeStart = StrToTime(s);
-					getline(fin, s, ',');
-					string b = s;
-					tmp->data.TimeEnd = StrToTime(s);
-					tmp->data.period = StrToPeriod(a, b);
-					getline(fin, s, '\n');
-					tmp->data.day = StrToDay(s);
-					tmp->next = NULL;
-				}
+				cout << "Schedule of class " << Class << " in semester " << semester << " in 2017-2018:" << endl;
+				ViewSchedule(sche);
+				system("pause");
+				return;
 			}
 			cout << "Input successfull!" << endl;
 			system("pause");
-			if (n == 18) AddNewCourse(pcourse, Class);
-			if (n == 19) EditSchedule(pcourse, sche);
-			if (n == 20) RemoveCourse(pcourse, Class);
+			if (n == 18) AddCourseSchedule(sche);//AddNewCourse(pcourse, Class);
+			else if (n == 19) EditSchedule(sche);
+			else if (n == 20) RemoveSchedule(sche);
 			cout << "Completed!" << endl;
-			MakeSchedule(pcourse, Class);
+			ExportSchedule(sche, Class, semester);
 			system("pause");
 			return;
 		}
@@ -163,50 +116,114 @@ void ImportSchedule(int n)
 	return;
 }
 
-void EditSchedule(nodecourse *&phead, schedule &sche)
+void AddCourseSchedule(schedule &sche)
 {
 	string s;
-	cout << "Input Course's code: ";
-	getline(cin, s, '\n');
-	nodecourse *cur = phead;
-	while (cur)
-	{
-		if (cur->data.CourseCode == s)
+	cout << "Input Course's Code: ";
+	getline(cin, s);
+	bool check = false;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 6; j++)
 		{
-			break;
+			if (sche.c[i][j] == s) check = true;
 		}
-		else cur = cur->next;
-	}
-	if (!cur)
+	if (check)
 	{
-		cout << "Invalid Course's code!" << endl;
-		system("pause");
-		return;
+		cout << "Valid Course! Please add new course's schedule. " << endl;
+		string a, b;
+		cout << "Input Time Start(hh:mm): ";
+		getline(cin, a);
+		cout << "Input Time End(hh:mm): ";
+		getline(cin, b);
+		int period = StrToPeriod(a, b);
+		cout << "Input day of week: ";
+		getline(cin, a);
+		dayofweek day = StrToDay(a);
+		if (sche.c[period][day] == "x")
+		{
+			sche.c[period][day] = s;
+			cout << "Added!" << endl;
+		}
+		else cout << "Collided! Cannot add." << endl;
 	}
-	string a;
-	cout << "Input Time Start(hh:mm): ";
-	getline(cin, a, '\n');
-	//cur->data.TimeStart = StrToTime(s);
-	cout << "Input Time End(hh:mm): ";
-	string b;
-	getline(cin, b, '\n');
-	//cur->data.TimeEnd = StrToTime(s);
-	//cur->data.period = StrToPeriod(a, b);
-	int period = StrToPeriod(a, b);
-	cout << "Input Day of week: ";
-	getline(cin, s, '\n');
-	dayofweek day = StrToDay(s);
-	if (sche.c[period][day] != "x") cout << "Collided! Cannot edit." << endl;
-	else
-	{
-		cur->data.TimeStart = StrToTime(a);
-		cur->data.TimeEnd = StrToTime(b);
-		cur->data.period = StrToPeriod(a, b);
-		cur->data.day = day;
-		cout << "Edited!" << endl;
-	}
+	return;
+}
+
+void EditSchedule(schedule &sche)
+{
+	string course, s;
+	cout << "Input Course's code: ";
+	bool check[4][6];
+	memset(check, true, sizeof(check));
+	getline(cin, course, '\n');
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 6; j++)
+		{
+			if (sche.c[i][j] == course && check[i][j])
+			{
+				cout << "The course is on " << IntToStr(j) << " in " << i + 1 << " period. Do you want to change?(y/n):";
+				getline(cin, s);
+				if (s == "y")
+				{
+					string a;
+					cout << "Input Time Start(hh:mm): ";
+					getline(cin, a, '\n');
+					cout << "Input Time End(hh:mm): ";
+					string b;
+					getline(cin, b, '\n');
+					int period = StrToPeriod(a, b);
+					cout << "Input Day of week: ";
+					getline(cin, s, '\n');
+					dayofweek day = StrToDay(s);
+					if (sche.c[period][day] != "x") cout << "Collided! Cannot edit." << endl;
+					else
+					{
+						sche.c[i][j] = "x";
+						sche.c[period][day] = course;
+						check[period][day] = false;
+					}
+				}
+			}
+		}
+	cout << "Edited!" << endl;
+	//ExportSchedule(sche, Class);
 	system("pause");
 	return;
+}
+
+void RemoveSchedule(schedule &sche)
+{
+	string course;
+	cout << "Input course's code: ";
+	getline(cin, course);
+	for(int i = 0; i < 4; i++)
+		for (int j = 0; j < 6; j++)
+		{
+			if (sche.c[i][j] == course)
+			{
+				sche.c[i][j] = "x";
+			}
+		}
+	cout << "Removed!" << endl;
+	return;
+}
+
+void ExportSchedule(schedule a, string Class, int semester)
+{
+	stringstream ss;
+	ss << (semester);
+	ofstream fout;
+	fout.open(Class + "_2017-2018_" + ss.str() + +"_schedule.csv");
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 6; j++)
+		{
+			if (j == 5) fout << a.c[i][j];
+			else fout << a.c[i][j] << ",";
+		}
+		if (i != 3) fout << endl;
+	}
+	fout.close();
 }
 
 void ViewSchedule(schedule a)
@@ -215,9 +232,8 @@ void ViewSchedule(schedule a)
 	{
 		for (int j = 0; j < 6; j++)
 		{
-			if (j == 5) cout << a.c[i][j];
-			else cout << a.c[i][j] << " ";
+			cout << a.c[i][j] << " ";
 		}
-		if (i != 3) cout << endl;
+		cout << endl;
 	}
 }

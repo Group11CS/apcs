@@ -18,6 +18,9 @@ struct nodestudent {
 	nodestudent* next;
 	student data;
 };
+void ReleaseStudent(nodestudent *&phead);
+void ReleaseCourse(nodecourse *&phead);
+void ReleaseClass(listclass *&phead);
 void Importstudentlist(int n);
 void AddStudent(nodestudent *&phead, string Class);
 void EditStudent(nodestudent *&phead, string Class);

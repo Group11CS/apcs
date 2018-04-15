@@ -8,7 +8,7 @@ void DesignStudent(string username, string password)
 	cout << "2.Change password" << endl;
 	cout << "3.Log out" << endl;
 	cout << "4.Check in" << endl;
-	cout << "5. View check in result" << endl;
+	cout << "5.View check in result" << endl;
 	cout << "6.View score of a course" << endl;
 	cout << "7.View schedule" << endl;
 	int option;
