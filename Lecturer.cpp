@@ -3,11 +3,11 @@
 #include "Class.h"
 #include "Course.h"
 
-void ImportScoreboard(int n)
+void ImportScoreboard(int n, string username)
 {
 	string Class,s, course;
 	ifstream fin;
-	fin.open("ListOfClass.csv");
+	fin.open(username + "_class.csv");
 	if (!fin.is_open()) return;
 	listclass* pclass = NULL, *cur = new listclass;
 	while (fin.good())
@@ -48,22 +48,28 @@ void ImportScoreboard(int n)
 			if (!fin.is_open()) return;
 			while (fin.good())
 			{
-				if (!pcourse)
+				getline(fin, s, ',');
+				getline(fin, a, ',');
+				getline(fin, a, ',');
+				getline(fin, a, ',');
+				getline(fin, a, ',');
+				fin.ignore(1000, '\n');
+				if (a == username)
 				{
-					pcourse = new nodecourse;
-					getline(fin, s, ',');
-					fin.ignore(1000, '\n');
-					pcourse->data.CourseCode = s;
-					tmp = pcourse;
-				}
-				else
-				{
-					tmp->next = new nodecourse;
-					tmp = tmp->next;
-					getline(fin, s, ',');
-					fin.ignore(1000, '\n');
-					tmp->data.CourseCode = s;
-					tmp->next = NULL;
+					if (!pcourse)
+					{
+						pcourse = new nodecourse;
+						pcourse->data.CourseCode = s;
+						tmp = pcourse;
+					}
+					else
+					{
+						tmp->next = new nodecourse;
+						tmp = tmp->next;
+						tmp->data.CourseCode = s;
+						//fin.ignore(1000, '\n');
+						tmp->next = NULL;
+					}
 				}
 			}
 			fin.close();
@@ -124,7 +130,7 @@ void ImportScoreboard(int n)
 					}
 					cout << "Input successfull!" << endl;
 					system("pause");
-					if (n == 6 || n == 24) ViewScoreboard(Class, course, pscoreboard);
+					if (n == 6) ViewScoreboard(Class, course, pscoreboard);
 					cout << "Completed!" << endl;
 					system("pause");
 					return;
@@ -180,7 +186,7 @@ void DesignLecturer(string username, string password)
 		break;
 	}
 	case 4: {
-		ImportScoreboard(4);
+		ImportScoreboard(4, username);
 		break;
 	}
 	case 5: {
@@ -188,7 +194,7 @@ void DesignLecturer(string username, string password)
 	}
 	case 6: {
 		system("cls");
-		ImportScoreboard(6);
+		ImportScoreboard(6, username);
 		DesignLecturer(username, password);
 		break;
 	}

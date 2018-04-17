@@ -35,5 +35,6 @@ void AddNewCourse(nodecourse *&phead, string Class);
 void RemoveCourse(nodecourse *&phead, string Class);
 void ExportCourse(nodecourse *cur, string Class);
 void MakeSchedule(nodecourse *phead, string Class);
+void SearchViewScoreboard(int n);
 void DesignAcademicStaff(string username, string password);
 #endif // _ACADEMICSTAFF_H_

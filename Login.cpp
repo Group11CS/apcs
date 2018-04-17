@@ -128,6 +128,34 @@ void GetInfo(string username, string password)
 	system("pause");
 	in.close();
 }
+
+string GetClass(string username)
+{
+	string s;
+	ifstream in("login.csv");
+	if (!in.is_open())
+		cout << "Couldn't open file";
+	bool checkuser = false;
+	while (in.good())
+	{
+		getline(in, s, ',');
+		if (s == username)
+		{
+			getline(in, s, ',');
+			getline(in, s, ',');
+			getline(in, s, ',');
+			getline(in, s, ',');
+			getline(in, s, ',');
+			getline(in, s, '\n');
+			in.ignore(1000, '\n');
+			break;
+		}
+		else in.ignore(1000, '\n');
+	}
+	in.close();
+	return s;
+}
+
 void ShowInfo(nodeuser *cur)
 {
 	cout << "User: " << cur->data.user << endl;

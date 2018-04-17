@@ -694,6 +694,142 @@ void ExportCourse(nodecourse *cur, string Class)
 	fout.close();
 }
 
+void SearchViewScoreboard(int n)
+{
+	string Class, s, course;
+	ifstream fin;
+	fin.open("ListOfClass.csv");
+	if (!fin.is_open()) return;
+	listclass* pclass = NULL, *cur = new listclass;
+	while (fin.good())
+	{
+		if (pclass == NULL)
+		{
+			pclass = new listclass;
+			pclass->next = NULL;
+			cout << "List of classes's Code:" << endl;
+			getline(fin, pclass->data, '\n');
+			cout << pclass->data << endl;
+			cur = pclass;
+		}
+		else
+		{
+			cur->next = new listclass;
+			cur = cur->next;
+			getline(fin, cur->data, '\n');
+			cout << cur->data << endl;
+			cur->next = NULL;
+		}
+	}
+	fin.close();
+	cin.ignore(1000, '\n');
+	cout << "Input the Class: ";
+	getline(cin, Class, '\n');
+	cur = pclass;
+	nodecourse *pcourse = NULL, *tmp = new nodecourse;
+	nodescoreboard *pscoreboard = NULL, *tmp1 = new nodescoreboard;
+	while (cur)
+	{
+		if (cur->data == Class)
+		{
+			cout << "Valid Class!" << endl;
+			fin.open(Class + "_course.csv");
+			string a;
+			//getline(fin, a, '\n');
+			if (!fin.is_open()) return;
+			while (fin.good())
+			{
+				if (!pcourse)
+				{
+					pcourse = new nodecourse;
+					getline(fin, s, ','); 
+					pcourse->data.CourseCode = s;
+					fin.ignore(1000, '\n');
+					tmp = pcourse;
+				}
+				else
+				{
+					tmp->next = new nodecourse;
+					tmp = tmp->next;
+					getline(fin, s, ',');
+					tmp->data.CourseCode = s;
+					fin.ignore(1000, '\n');
+					tmp->next = NULL;
+				}
+			}
+			fin.close();
+			tmp = pcourse;
+			cout << "List of course in class " << Class << ":" << endl;
+			while (tmp)
+			{
+				cout << tmp->data.CourseCode << endl;
+				tmp = tmp->next;
+			}
+			cout << "Input the Course: ";
+			getline(cin, course, '\n');
+			tmp = pcourse;
+			while (tmp)
+			{
+				if (tmp->data.CourseCode == course)
+				{
+					cout << "Valid course!" << endl;
+					fin.open(Class + "_" + course + "_" + "scoreboard.csv");
+					if (!fin.is_open()) return;
+					while (!fin.eof())
+					{
+						if (!pscoreboard)
+						{
+							pscoreboard = new nodescoreboard;
+							getline(fin, pscoreboard->data.ID, ',');
+							getline(fin, pscoreboard->data.fullname, ',');
+							getline(fin, s, ',');
+							pscoreboard->data.midterm = stof(s);
+							getline(fin, s, ',');
+							pscoreboard->data.final = stof(s);
+							getline(fin, s, ',');
+							pscoreboard->data.lab = stof(s);
+							getline(fin, s, ',');
+							pscoreboard->data.bonus = stof(s);
+							getline(fin, s, '\n');
+							pscoreboard->data.total = stof(s);
+							tmp1 = pscoreboard;
+						}
+						else
+						{
+							tmp1->next = new nodescoreboard;
+							tmp1 = tmp1->next;
+							getline(fin, tmp1->data.ID, ',');
+							getline(fin, tmp1->data.fullname, ',');
+							getline(fin, s, ',');
+							tmp1->data.midterm = stof(s);
+							getline(fin, s, ',');
+							tmp1->data.final = stof(s);
+							getline(fin, s, ',');
+							tmp1->data.lab = stof(s);
+							getline(fin, s, ',');
+							tmp1->data.bonus = stof(s);
+							getline(fin, s, '\n');
+							tmp1->data.total = stof(s);
+							tmp1->next = NULL;
+						}
+					}
+					cout << "Input successfull!" << endl;
+					system("pause");
+					if (n == 6 || n == 24) ViewScoreboard(Class, course, pscoreboard);
+					cout << "Completed!" << endl;
+					system("pause");
+					return;
+				}
+				else tmp = tmp->next;
+			}
+		}
+		else cur = cur->next;
+	}
+	cout << "Invalid class!" << endl;
+	system("pause");
+	return;
+}
+
 void DesignAcademicStaff(string username, string password)
 {
 	system("cls");
@@ -873,7 +1009,7 @@ void DesignAcademicStaff(string username, string password)
 	}
 	case 24: {
 		system("cls");
-		ImportScoreboard(24);
+		SearchViewScoreboard(24);
 		DesignAcademicStaff(username, password);
 		break;
 	}

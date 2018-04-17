@@ -30,4 +30,5 @@ bool cmp(string a, string b);
 int ViewLogin(string &username, string &password);
 void GetInfo(string username, string password);
 void ShowInfo(nodeuser *cur);
+string GetClass(string username);
 #endif // _LOGIN_H_
