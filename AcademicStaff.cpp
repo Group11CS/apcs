@@ -4,6 +4,124 @@
 #include "Login.h"
 #include "Schedule.h"
 #include "Lecturer.h"
+#include "Attendance.h"
+
+void MakeFileList(string Class, string course)
+{
+	ifstream fin;
+	ofstream fout;
+	fin.open(Class + ".csv");
+	nodestudent *pstudent = NULL, *cur = NULL;
+	while (fin.good())
+	{
+		if (!pstudent)
+		{
+			pstudent = new nodestudent;
+			getline(fin, pstudent->data.MSSV, ',');
+			getline(fin, pstudent->data.name, ',');
+			cur = pstudent;
+		}
+		else
+		{
+			cur->next = new nodestudent;
+			cur = cur->next;
+			getline(fin, cur->data.MSSV, ',');
+			getline(fin, cur->data.name, ',');
+			cur->next = NULL;
+		}
+		fin.ignore(1000, '\n');
+	}
+	fin.close();
+	fout.open(Class + "_" + course + ".csv");
+	cur = pstudent;
+	while (cur->next != NULL)
+	{
+		fout << cur->data.MSSV << "," << cur->data.name << endl;
+		cur = cur->next;
+	}
+	fout << cur->data.MSSV << "," << cur->data.name;
+	fout.close();
+	ReleaseStudent(pstudent);
+	return;
+}
+
+void MakeFileAttendance(string Class, string course)
+{
+	ifstream fin;
+	ofstream fout;
+	fin.open(Class + ".csv");
+	nodestudent *pstudent = NULL, *cur = NULL;
+	while (fin.good())
+	{
+		if (!pstudent)
+		{
+			pstudent = new nodestudent;
+			getline(fin, pstudent->data.MSSV, ',');
+			getline(fin, pstudent->data.name, ',');
+			cur = pstudent;
+		}
+		else
+		{
+			cur->next = new nodestudent;
+			cur = cur->next;
+			getline(fin, cur->data.MSSV, ',');
+			getline(fin, cur->data.name, ',');
+			cur->next = NULL;
+		}
+		fin.ignore(1000, '\n');
+	}
+	fin.close();
+	fout.open(Class + "_" + course + "_attendance.csv");
+	cur = pstudent;
+	while (cur->next != NULL)
+	{
+		fout << cur->data.MSSV << "," << cur->data.name << endl;
+		cur = cur->next;
+	}
+	fout << cur->data.MSSV << "," << cur->data.name;
+	fout.close();
+	ReleaseStudent(pstudent);
+	return;
+}
+
+void MakeFileScoreboard(string Class, string course)
+{
+	ifstream fin;
+	ofstream fout;
+	fin.open(Class + ".csv");
+	nodestudent *pstudent = NULL, *cur = NULL;
+	while (fin.good())
+	{
+		if (!pstudent)
+		{
+			pstudent = new nodestudent;
+			getline(fin, pstudent->data.MSSV, ',');
+			getline(fin, pstudent->data.name, ',');
+			cur = pstudent;
+		}
+		else
+		{
+			cur->next = new nodestudent;
+			cur = cur->next;
+			getline(fin, cur->data.MSSV, ',');
+			getline(fin, cur->data.name, ',');
+			cur->next = NULL;
+		}
+		fin.ignore(1000, '\n');
+	}
+	fin.close();
+	fout.open(Class + "_" + course + "_scoreboard.csv");
+	cur = pstudent;
+	while (cur->next != NULL)
+	{
+		fout << cur->data.MSSV << "," << cur->data.name << endl;
+		cur = cur->next;
+	}
+	fout << cur->data.MSSV << "," << cur->data.name;
+	fout.close();
+	ReleaseStudent(pstudent);
+	return;
+}
 
 void ReleaseStudent(nodestudent *&phead)
 {
@@ -104,6 +222,10 @@ void Importstudentlist(int n)
 					getline(fin, head->data.MSSV, ',');
 					//cout << head->data.MSSV << " :";
 					getline(fin, head->data.name, '\n');
+					getline(fin, head->data.mail);
+					getline(fin, head->data.phone);
+					getline(fin, head->data.username);
+					getline(fin, head->data.password);
 					//cout << head->data.name << "\n";
 					tmp = head;
 				}
@@ -114,6 +236,10 @@ void Importstudentlist(int n)
 					getline(fin, tmp->data.MSSV, ',');
 					//cout << tmp->data.MSSV << " :";
 					getline(fin, tmp->data.name, '\n');
+					getline(fin, tmp->data.mail);
+					getline(fin, tmp->data.phone);
+					getline(fin, tmp->data.username);
+					getline(fin, tmp->data.password);
 					//cout << tmp->data.name << "\n";
 					tmp->next = NULL;
 				}
@@ -514,6 +640,9 @@ void ImportCourse(int n)
 					getline(fin, s, '\n');
 					pcourse->data.day = StrToDay(s);
 					pcourse->next = NULL;
+					MakeFileList(Class, pcourse->data.CourseCode);
+					MakeFileAttendance(Class, pcourse->data.CourseCode);
+					MakeFileScoreboard(Class, pcourse->data.CourseCode);
 					tmp = pcourse;
 				}
 				else
@@ -543,6 +672,9 @@ void ImportCourse(int n)
 					tmp->data.period = StrToPeriod(a, b);
 					getline(fin, s, '\n');
 					tmp->data.day = StrToDay(s);
+					MakeFileList(Class, tmp->data.CourseCode);
+					MakeFileAttendance(Class, tmp->data.CourseCode);
+					MakeFileScoreboard(Class, tmp->data.CourseCode);
 					tmp->next = NULL;
 				}
 			}
@@ -694,6 +826,132 @@ void ExportCourse(nodecourse *cur, string Class)
 	fout.close();
 }
 
+void SearchViewCheckIn(int n)
+{
+	string Class, s, course;
+	ifstream fin;
+	fin.open("ListOfClass.csv");
+	if (!fin.is_open()) return;
+	listclass* pclass = NULL, *cur = new listclass;
+	while (fin.good())
+	{
+		if (pclass == NULL)
+		{
+			pclass = new listclass;
+			pclass->next = NULL;
+			cout << "List of classes's Code:" << endl;
+			getline(fin, pclass->data, '\n');
+			cout << pclass->data << endl;
+			cur = pclass;
+		}
+		else
+		{
+			cur->next = new listclass;
+			cur = cur->next;
+			getline(fin, cur->data, '\n');
+			cout << cur->data << endl;
+			cur->next = NULL;
+		}
+	}
+	fin.close();
+	cin.ignore(1000, '\n');
+	cout << "Input the Class: ";
+	getline(cin, Class, '\n');
+	cur = pclass;
+	nodecourse *pcourse = NULL, *tmp = new nodecourse;
+	nodeattendance *pattendance = NULL, *tmp1 = new nodeattendance;
+	while (cur)
+	{
+		if (cur->data == Class)
+		{
+			cout << "Valid Class!" << endl;
+			fin.open(Class + "_course.csv");
+			string a;
+			//getline(fin, a, '\n');
+			if (!fin.is_open()) return;
+			while (fin.good())
+			{
+				if (!pcourse)
+				{
+					pcourse = new nodecourse;
+					getline(fin, s, ',');
+					pcourse->data.CourseCode = s;
+					fin.ignore(1000, '\n');
+					tmp = pcourse;
+				}
+				else
+				{
+					tmp->next = new nodecourse;
+					tmp = tmp->next;
+					getline(fin, s, ',');
+					tmp->data.CourseCode = s;
+					fin.ignore(1000, '\n');
+					tmp->next = NULL;
+				}
+			}
+			fin.close();
+			tmp = pcourse;
+			cout << "List of course in class " << Class << ":" << endl;
+			while (tmp)
+			{
+				cout << tmp->data.CourseCode << endl;
+				tmp = tmp->next;
+			}
+			cout << "Input the Course: ";
+			getline(cin, course, '\n');
+			tmp = pcourse;
+			while (tmp)
+			{
+				if (tmp->data.CourseCode == course)
+				{
+					cout << "Valid course!" << endl;
+					fin.open(Class + "_" + course + "_" + "attendance.csv");
+					if (!fin.is_open()) return;
+					while (!fin.eof())
+					{
+						if (!pattendance)
+						{
+							pattendance = new nodeattendance;
+							getline(fin, pattendance->data.ID, ',');
+							getline(fin, pattendance->data.fullname, ',');
+							for (int i = 0; i < 9; i++)
+							{
+								getline(fin, pattendance->data.w[i], ',');
+							}
+							getline(fin, pattendance->data.w[9], '\n');
+							tmp1 = pattendance;
+						}
+						else
+						{
+							tmp1->next = new nodeattendance;
+							tmp1 = tmp1->next;
+							getline(fin, tmp1->data.ID, ',');
+							getline(fin, tmp1->data.fullname, ',');
+							for (int i = 0; i < 9; i++)
+							{
+								getline(fin, tmp1->data.w[i], ',');
+							}
+							getline(fin, tmp1->data.w[9], '\n');
+							tmp1->next = NULL;
+						}
+					}
+					cout << "Input successfull!" << endl;
+					system("pause");
+					if (n == 22) ViewCheckIn(Class, course, pattendance);
+					cout << "Completed!" << endl;
+					system("pause");
+					return;
+				}
+				else tmp = tmp->next;
+			}
+		}
+		else cur = cur->next;
+	}
+	cout << "Invalid class!" << endl;
+	system("pause");
+	return;
+}
+
 void SearchViewScoreboard(int n)
 {
 	string Class, s, course;
@@ -815,7 +1073,7 @@ void SearchViewScoreboard(int n)
 					}
 					cout << "Input successfull!" << endl;
 					system("pause");
-					if (n == 6 || n == 24) ViewScoreboard(Class, course, pscoreboard);
+					if (n == 24) ViewScoreboard(Class, course, pscoreboard);
 					cout << "Completed!" << endl;
 					system("pause");
 					return;
@@ -1002,6 +1260,9 @@ void DesignAcademicStaff(string username, string password)
 		break;
 	}
 	case 22: {
+		system("cls");
+		SearchViewCheckIn(22);
+		DesignAcademicStaff(username, password);
 		break;
 	}
 	case 23: {

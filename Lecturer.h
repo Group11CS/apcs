@@ -11,10 +11,12 @@
 #include "Class.h"
 #include "Course.h"
 #include "Scoreboard.h"
+#include "Attendance.h"
 using namespace std;
 
 void ImportScoreboard(int n, string username);
 void ViewScoreboard(string Class, string course, nodescoreboard *cur);
+void ViewCheckIn(string Class, string course, nodeattendance *cur);
 void DesignLecturer(string username, string password);
 #endif // _ACADEMICSTAFF_H_
 

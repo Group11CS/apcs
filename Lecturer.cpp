@@ -157,6 +157,25 @@ void ViewScoreboard(string Class, string course, nodescoreboard *cur)
 	return;
 }
 
+void ViewCheckIn(string Class, string course, nodeattendance *cur)
+{
+	cout << "Attendance of Class: " << Class << ", Course:" << course << endl;
+	cout << "Student ID,Fullname,Week1,Week2,Week3,Week4,Week5,Week6,Week7,Week8,Week9,Week10" << endl;
+	while (cur)
+	{
+		cout << cur->data.ID << "," << cur->data.fullname << ",";
+		for (int i = 0; i < 9; i++)
+		{
+			cout << cur->data.w[i] << ",";
+		}
+		cout << cur->data.w[9] << endl;
+		cur = cur->next;
+	}
+	cout << "o: Present!" << endl;
+	cout << "x: Absent!" << endl;
+	return;
+}
+
 void DesignLecturer(string username, string password)
 {
 	system("cls");

@@ -13,11 +13,18 @@ using namespace std;
 struct student {
 	string name;
 	string MSSV;
+	string mail;
+	string phone;
+	string username;
+	string password;
 };
 struct nodestudent {
 	nodestudent* next;
 	student data;
 };
+void MakeFileList(string Class, string course);
+void MakeFileAttendance(string Class, string course);
+void MakeFileScoreboard(string Class, string course);
 void ReleaseStudent(nodestudent *&phead);
 void ReleaseCourse(nodecourse *&phead);
 void ReleaseClass(listclass *&phead);
@@ -36,5 +43,6 @@ void RemoveCourse(nodecourse *&phead, string Class);
 void ExportCourse(nodecourse *cur, string Class);
 void MakeSchedule(nodecourse *phead, string Class);
 void SearchViewScoreboard(int n);
+void SearchViewCheckIn(int n);
 void DesignAcademicStaff(string username, string password);
 #endif // _ACADEMICSTAFF_H_
